@@ -1,0 +1,10 @@
+language: go
+go:
+  - 1.2
+
+install:
+  - go get code.google.com/p/go.tools/cmd/cover
+  - go get github.com/onsi/ginkgo
+  - go get github.com/onsi/gomega
+
+script: $HOME/gopath/bin/ginkgo -r --randomizeAllSpecs
