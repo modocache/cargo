@@ -28,17 +28,7 @@ func (edge *Edge) Reverse() *Edge {
 
 type VertexMap map[interface{}]*Vertex
 
-func (vertices VertexMap) Set(key interface{}, value *Vertex) {
-	_, exists := vertices[key]
-	if exists {
-		message := fmt.Sprintf("Vertex", value, "already exists in graph")
-		panic(message)
-	} else {
-		vertices[key] = value
-	}
-}
-
-func (vertices VertexMap) Get(key interface{}) *Vertex {
+func (vertices VertexMap) getOrPanic(key interface{}) *Vertex {
 	vertex, exists := vertices[key]
 	if !exists {
 		message := fmt.Sprintf("Vertex", key, "is not included in the graph")
@@ -53,12 +43,12 @@ type Graph interface {
 }
 
 func appendVertex(graph Graph, key interface{}) {
-	graph.Vertices().Set(key, &Vertex{Value: key, flag: unvisited})
+	graph.Vertices()[key] = &Vertex{Value: key, flag: unvisited}
 }
 
 func connectVertices(graph Graph, fromKey, toKey interface{}, weight int) {
-	from := graph.Vertices().Get(fromKey)
-	to := graph.Vertices().Get(toKey)
+	from := graph.Vertices().getOrPanic(fromKey)
+	to := graph.Vertices().getOrPanic(toKey)
 	edge := &Edge{From: from, To: to, Weight: weight}
 	from.Edges = append(from.Edges, edge)
 }
@@ -72,7 +62,7 @@ func clearVisitedFlags(graph Graph) {
 }
 
 func depthFirstSearch(graph Graph, startKey interface{}, callback GraphSearchCallback) {
-	vertex := graph.Vertices().Get(startKey)
+	vertex := graph.Vertices().getOrPanic(startKey)
 	vertex.flag = visiting
 	if callback(vertex) {
 		return

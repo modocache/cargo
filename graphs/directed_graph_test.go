@@ -31,20 +31,13 @@ var _ = Describe("DirectedGraph", func() {
 
 	Describe(".DepthFirstSearch()", func() {
 		It("traverses each vertex", func() {
-			graph.Append("A")
-			graph.Append("B")
-			graph.Append("C")
-			graph.Append("D")
-			graph.Append("E")
-			graph.Append("F")
-			graph.Append("G")
-			graph.Connect("A", "B", 0)
-			graph.Connect("A", "C", 0)
-			graph.Connect("C", "D", 0)
-			graph.Connect("D", "E", 0)
-			graph.Connect("C", "F", 0)
-			graph.Connect("F", "G", 0)
-			graph.Connect("G", "A", 0)
+			graph.AppendAdjacencyList(AdjacencyList{
+				"A": Connections{{"B", 0}, {"C", 0}},
+				"C": Connections{{"D", 0}, {"F", 0}},
+				"D": Connections{{"E", 0}},
+				"F": Connections{{"G", 0}},
+				"G": Connections{{"A", 0}},
+			})
 
 			keys := []string{}
 			graph.DepthFirstSearch("A", func(vertex *Vertex) bool {
