@@ -1,0 +1,2 @@
+# Coverage report files for code.google.com/p/go.tools/cmd/cover
+*.coverprofile
