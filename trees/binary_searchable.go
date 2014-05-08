@@ -7,6 +7,7 @@ package trees
 
 import (
 	"github.com/modocache/cargo/comparators"
+	"math"
 	"reflect"
 )
 
@@ -35,6 +36,26 @@ func Depth(searchable BinarySearchable) int {
 	callback := func(searchable BinarySearchable) { depth++ }
 	root(searchable, callback)
 	return depth
+}
+
+func Height(searchable BinarySearchable) int {
+	if isLeaf(searchable) {
+		return 0
+	} else {
+		leftHeight, rightHeight := 0, 0
+		if left := searchable.Left(); left != nil {
+			leftHeight = Height(left)
+		}
+		if right := searchable.Right(); right != nil {
+			rightHeight = Height(right)
+		}
+
+		return int(math.Max(float64(leftHeight), float64(rightHeight))) + 1
+	}
+}
+
+func IsBalanced(searchable BinarySearchable) bool {
+	return true // TODO
 }
 
 func root(searchable BinarySearchable, callback searchableCallback) BinarySearchable {
@@ -137,6 +158,10 @@ func rotateRight(y BinarySearchable) {
 
 func isOrhpan(searchable BinarySearchable) bool {
 	return searchable.Parent() == nil
+}
+
+func isLeaf(searchable BinarySearchable) bool {
+	return searchable.Left() == nil && searchable.Right() == nil
 }
 
 func isRightChild(searchable BinarySearchable) bool {

@@ -55,6 +55,12 @@ func (tree *BinarySearchTree) Insert(value interface{}) BinarySearchable {
 	return insert(tree, value, constructor).(*BinarySearchTree)
 }
 
+func (tree *BinarySearchTree) InsertAll(values ...interface{}) {
+	for _, value := range values {
+		tree.Insert(value)
+	}
+}
+
 func (tree *BinarySearchTree) Find(value interface{}) BinarySearchable {
 	return find(tree, value)
 }

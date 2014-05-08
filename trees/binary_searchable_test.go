@@ -32,9 +32,8 @@ var _ = Describe("BinarySearchable", func() {
 			var root BinarySearchable
 			BeforeEach(func() {
 				root = NewBinarySearchTree("Homer", comparators.StringLess)
-				root.Insert("Bart")
-				root.Insert("Lisa")
-				searchable = root.Insert("Maggie")
+				root.(*BinarySearchTree).InsertAll("Bart", "Lisa", "Maggie")
+				searchable = root.Find("Maggie")
 			})
 			It("returns the orphan, since it's the root", func() {
 				Expect(Root(searchable)).To(Equal(root))
@@ -55,13 +54,46 @@ var _ = Describe("BinarySearchable", func() {
 		Context("when the searchable is not an orphan", func() {
 			BeforeEach(func() {
 				root := NewBinarySearchTree("Bob", comparators.StringLess)
-				root.Insert("Tina")
-				root.Insert("Gene")
-				root.Insert("Louise")
+				root.InsertAll("Tina", "Gene", "Louise")
 				searchable = root.Find("Louise")
 			})
 			It("returns the number of nodes to the root", func() {
 				Expect(Depth(searchable)).To(Equal(3))
+			})
+		})
+	})
+
+	Describe("Height()", func() {
+		Context("when the searchable is nil", func() {
+			BeforeEach(func() { searchable = nil })
+			XIt("panics")
+		})
+
+		Context("when the searchable is a leaf", func() {
+			BeforeEach(func() {
+				searchable = NewBinarySearchTree("konoha", comparators.StringLess)
+			})
+			It("returns 0", func() {
+				Expect(Height(searchable)).To(Equal(0))
+			})
+		})
+
+		Context("when the searchable has subtrees", func() {
+			BeforeEach(func() {
+				searchable = NewBinarySearchTree(0, comparators.IntLess)
+				searchable.(*BinarySearchTree).InsertAll(-1, -3, -2, -4, 1, 2, 3)
+			})
+			It("returns the height of the searchable", func() {
+				Expect(Height(searchable)).To(Equal(3))
+			})
+		})
+	})
+
+	Describe("IsBalanced()", func() {
+		Context("when searchable is nil", func() {
+			BeforeEach(func() { searchable = nil })
+			It("returns true (it is balanced in its nothingness)", func() {
+				Expect(IsBalanced(searchable)).To(BeTrue())
 			})
 		})
 	})
