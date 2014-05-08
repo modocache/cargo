@@ -5,43 +5,12 @@ import (
 )
 
 type BinarySearchTree struct {
-	parent BinarySearchable
-	left   BinarySearchable
-	right  BinarySearchable
-	value  interface{}
-	less   comparators.Less
+	*BinaryTree
+	less comparators.Less
 }
 
 func NewBinarySearchTree(value interface{}, less comparators.Less) *BinarySearchTree {
-	return &BinarySearchTree{value: value, less: less}
-}
-
-func (tree *BinarySearchTree) Parent() BinarySearchable {
-	return tree.parent
-}
-
-func (tree *BinarySearchTree) SetParent(parent BinarySearchable) {
-	tree.parent = parent
-}
-
-func (tree *BinarySearchTree) Left() BinarySearchable {
-	return tree.left
-}
-
-func (tree *BinarySearchTree) SetLeft(left BinarySearchable) {
-	tree.left = left
-}
-
-func (tree *BinarySearchTree) Right() BinarySearchable {
-	return tree.right
-}
-
-func (tree *BinarySearchTree) SetRight(right BinarySearchable) {
-	tree.right = right
-}
-
-func (tree *BinarySearchTree) Value() interface{} {
-	return tree.value
+	return &BinarySearchTree{NewBinaryTree(value), less}
 }
 
 func (tree *BinarySearchTree) Less() comparators.Less {
@@ -50,7 +19,9 @@ func (tree *BinarySearchTree) Less() comparators.Less {
 
 func (tree *BinarySearchTree) Insert(value interface{}) BinarySearchable {
 	constructor := func(parent BinarySearchable, value interface{}) BinarySearchable {
-		return &BinarySearchTree{value: value, less: tree.less, parent: parent}
+		binaryTree := NewBinaryTree(value)
+		binaryTree.SetParent(parent)
+		return &BinarySearchTree{binaryTree, tree.less}
 	}
 	return insert(tree, value, constructor).(*BinarySearchTree)
 }

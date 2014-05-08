@@ -23,7 +23,7 @@ type RedBlackTree struct {
 }
 
 func NewRedBlackTree(value interface{}, less comparators.Less) *RedBlackTree {
-	return &RedBlackTree{&BinarySearchTree{value: value, less: less}, Black}
+	return &RedBlackTree{NewBinarySearchTree(value, less), Black}
 }
 
 func (tree *RedBlackTree) Insert(value interface{}) BinarySearchable {
@@ -40,7 +40,9 @@ func (tree *RedBlackTree) InsertAll(values ...interface{}) {
 
 func (tree *RedBlackTree) constructor() childConstructor {
 	return func(parent BinarySearchable, value interface{}) BinarySearchable {
-		return &RedBlackTree{&BinarySearchTree{value: value, less: tree.less, parent: parent}, Red}
+		searchTree := NewBinarySearchTree(value, tree.less)
+		searchTree.SetParent(parent)
+		return &RedBlackTree{searchTree, Red}
 	}
 }
 
