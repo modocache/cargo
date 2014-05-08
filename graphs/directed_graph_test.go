@@ -29,6 +29,38 @@ var _ = Describe("DirectedGraph", func() {
 		})
 	})
 
+	Describe(".RouteExists()", func() {
+		Context("when a route exists between the start and end keys", func() {
+			BeforeEach(func() {
+				graph.AppendAdjacencyList(AdjacencyList{
+					"A": Connections{{"A", 0}, {"B", 0}},
+					"B": Connections{{"C", 0}, {"D", 0}},
+					"C": Connections{{"D", 0}, {"E", 0}, {"F", 0}, {"G", 0}},
+					"F": Connections{{"H", 0}, {"I", 0}},
+					"I": Connections{{"J", 0}},
+				})
+			})
+			It("returns true", func() {
+				Expect(graph.RouteExists("A", "J")).To(BeTrue())
+			})
+		})
+
+		Context("when a route does not exist between the start and end keys", func() {
+			BeforeEach(func() {
+				graph.AppendAdjacencyList(AdjacencyList{
+					"A": Connections{{"A", 0}, {"B", 0}},
+					"B": Connections{{"C", 0}, {"D", 0}},
+					"C": Connections{{"D", 0}, {"E", 0}, {"G", 0}},
+					"F": Connections{{"H", 0}, {"I", 0}},
+					"I": Connections{{"J", 0}},
+				})
+			})
+			It("returns false", func() {
+				Expect(graph.RouteExists("A", "J")).To(BeFalse())
+			})
+		})
+	})
+
 	Describe("searching", func() {
 		var visited []string
 		var callback func(vertex *Vertex) bool

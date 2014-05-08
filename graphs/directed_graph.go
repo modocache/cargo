@@ -22,6 +22,16 @@ func (graph *DirectedGraph) Connect(fromKey, toKey interface{}, weight int) {
 	connectVertices(graph, fromKey, toKey, weight)
 }
 
+func (graph *DirectedGraph) RouteExists(startKey, endKey interface{}) bool {
+	exists := false
+	graph.BreadthFirstSearch(startKey, func(vertex *Vertex) bool {
+		exists = vertex.Value == endKey
+		return exists
+	})
+
+	return exists
+}
+
 type Connection struct {
 	Key    interface{}
 	Weight int
