@@ -31,6 +31,8 @@ func (edge *Edge) Reverse() *Edge {
 
 type VertexMap map[interface{}]*Vertex
 
+type GraphSearchCallback func(vertex *Vertex) bool
+
 func (vertices VertexMap) getOrPanic(key interface{}) *Vertex {
 	vertex, exists := vertices[key]
 	if !exists {
@@ -55,8 +57,6 @@ func connectVertices(graph Graph, fromKey, toKey interface{}, weight int) {
 	edge := &Edge{From: from, To: to, Weight: weight}
 	from.Edges = append(from.Edges, edge)
 }
-
-type GraphSearchCallback func(vertex *Vertex) bool
 
 func clearVisitedFlags(graph Graph) {
 	for _, vertex := range graph.Vertices() {

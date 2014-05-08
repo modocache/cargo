@@ -1,6 +1,13 @@
+/*
+TODO: Add package comment here.
+
+http://golang.org/doc/effective_go.html#commentary
+*/
 package trees
 
 import (
+	"github.com/modocache/cargo"
+	"github.com/modocache/cargo/queues"
 	"math"
 )
 
@@ -14,7 +21,7 @@ type BinaryTraversable interface {
 	Value() interface{}
 }
 
-type traversableCallback func(traversable BinaryTraversable)
+type TraversalCallback func(traversable BinaryTraversable) bool
 
 func Root(traversable BinaryTraversable) BinaryTraversable {
 	return root(traversable, nil)
@@ -22,9 +29,28 @@ func Root(traversable BinaryTraversable) BinaryTraversable {
 
 func Depth(traversable BinaryTraversable) int {
 	depth := -1
-	callback := func(traversable BinaryTraversable) { depth++ }
+	callback := func(traversable BinaryTraversable) bool {
+		depth++
+		return false
+	}
 	root(traversable, callback)
 	return depth
+}
+
+func root(traversable BinaryTraversable, callback TraversalCallback) BinaryTraversable {
+	if traversable == nil {
+		panic("attempt to pass trees.Root() a nil object")
+	}
+
+	if callback != nil {
+		callback(traversable) // Ignore callback value; always find root
+	}
+
+	if isOrhpan(traversable) {
+		return traversable
+	} else {
+		return root(traversable.Parent(), callback)
+	}
 }
 
 func Height(traversable BinaryTraversable) int {
@@ -53,19 +79,72 @@ func IsBalanced(traversable BinaryTraversable) bool {
 	}
 }
 
-func root(traversable BinaryTraversable, callback traversableCallback) BinaryTraversable {
-	if traversable == nil {
-		panic("attempt to pass trees.Root() a nil object")
+func BreadthFirstSearch(traversable BinaryTraversable, callback TraversalCallback) {
+	queue := queues.NewQueue()
+	pushOnQueueIfNotNil(queue, traversable)
+	breadthFirstSearch(queue, callback)
+}
+
+func breadthFirstSearch(queue *queues.Queue, callback TraversalCallback) {
+	if queue.IsEmpty() {
+		return
 	}
 
-	if callback != nil {
-		callback(traversable)
+	traversable := queue.Pop().(BinaryTraversable)
+	if callback(traversable) {
+		return
 	}
 
-	if isOrhpan(traversable) {
-		return traversable
-	} else {
-		return root(traversable.Parent(), callback)
+	pushOnQueueIfNotNil(queue, traversable.Left())
+	pushOnQueueIfNotNil(queue, traversable.Right())
+	breadthFirstSearch(queue, callback)
+}
+
+func pushOnQueueIfNotNil(queue *queues.Queue, element interface{}) {
+	if element != nil {
+		queue.Push(element)
+	}
+}
+
+func DepthFirstSearch(traversable BinaryTraversable,
+	order cargo.TraversalOrder, callback TraversalCallback) {
+	switch order {
+	case cargo.PreOrder:
+		depthFirstSearchPreOrder(traversable, callback)
+	case cargo.InOrder:
+		depthFirstSearchInOrder(traversable, callback)
+	case cargo.PostOrder:
+		depthFirstSearchPostOrder(traversable, callback)
+	}
+}
+
+func depthFirstSearchPreOrder(traversable BinaryTraversable, callback TraversalCallback) {
+	if traversable != nil {
+		if callback(traversable) {
+			return
+		}
+		depthFirstSearchPreOrder(traversable.Left(), callback)
+		depthFirstSearchPreOrder(traversable.Right(), callback)
+	}
+}
+
+func depthFirstSearchInOrder(traversable BinaryTraversable, callback TraversalCallback) {
+	if traversable != nil {
+		depthFirstSearchInOrder(traversable.Left(), callback)
+		if callback(traversable) {
+			return
+		}
+		depthFirstSearchInOrder(traversable.Right(), callback)
+	}
+}
+
+func depthFirstSearchPostOrder(traversable BinaryTraversable, callback TraversalCallback) {
+	if traversable != nil {
+		depthFirstSearchPostOrder(traversable.Left(), callback)
+		depthFirstSearchPostOrder(traversable.Right(), callback)
+		if callback(traversable) {
+			return
+		}
 	}
 }
 

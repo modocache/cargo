@@ -1,8 +1,3 @@
-/*
-TODO: Add package comment here.
-
-http://golang.org/doc/effective_go.html#commentary
-*/
 package trees
 
 import (
