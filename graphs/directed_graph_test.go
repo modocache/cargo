@@ -29,8 +29,11 @@ var _ = Describe("DirectedGraph", func() {
 		})
 	})
 
-	Describe(".DepthFirstSearch()", func() {
-		It("traverses each vertex", func() {
+	Describe("searching", func() {
+		var visited []string
+		var callback func(vertex *Vertex) bool
+
+		BeforeEach(func() {
 			graph.AppendAdjacencyList(AdjacencyList{
 				"A": Connections{{"B", 0}, {"C", 0}},
 				"C": Connections{{"D", 0}, {"F", 0}},
@@ -39,12 +42,25 @@ var _ = Describe("DirectedGraph", func() {
 				"G": Connections{{"A", 0}},
 			})
 
-			keys := []string{}
-			graph.DepthFirstSearch("A", func(vertex *Vertex) bool {
-				keys = append(keys, vertex.Value.(string))
+			visited = []string{}
+			callback = func(vertex *Vertex) bool {
+				visited = append(visited, vertex.Value.(string))
 				return false
+			}
+		})
+
+		Describe(".DepthFirstSearch()", func() {
+			It("traverses each vertex, depth-first", func() {
+				graph.DepthFirstSearch("A", callback)
+				Expect(visited).To(Equal([]string{"A", "B", "C", "D", "E", "F", "G"}))
 			})
-			Expect(keys).To(Equal([]string{"A", "B", "C", "D", "E", "F", "G"}))
+		})
+
+		Describe(".BreadthFirstSearch()", func() {
+			It("traverses each vertex, breadth-first", func() {
+				graph.BreadthFirstSearch("A", callback)
+				Expect(visited).To(Equal([]string{"A", "B", "C", "D", "F", "E", "G"}))
+			})
 		})
 	})
 })

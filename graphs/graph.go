@@ -1,6 +1,9 @@
 package graphs
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/modocache/cargo/queues"
+)
 
 type visitedFlag int
 
@@ -75,4 +78,23 @@ func depthFirstSearch(graph Graph, startKey interface{}, callback GraphSearchCal
 	}
 
 	vertex.flag = visited
+}
+
+func breadthFirstSearch(graph Graph, queue *queues.Queue, callback GraphSearchCallback) {
+	vertex := graph.Vertices().getOrPanic(queue.Pop())
+	if callback(vertex) {
+		return
+	}
+	vertex.flag = visited
+
+	for _, edge := range vertex.Edges {
+		if to := edge.To; to.flag == unvisited {
+			to.flag = visiting
+			queue.Push(to.Value)
+		}
+	}
+
+	if !queue.IsEmpty() {
+		breadthFirstSearch(graph, queue, callback)
+	}
 }

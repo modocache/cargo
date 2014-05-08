@@ -1,5 +1,7 @@
 package graphs
 
+import "github.com/modocache/cargo/queues"
+
 type DirectedGraph struct {
 	vertices VertexMap
 }
@@ -45,4 +47,11 @@ func (graph *DirectedGraph) AppendAdjacencyList(adjacencies AdjacencyList) {
 func (graph *DirectedGraph) DepthFirstSearch(startKey interface{}, callback GraphSearchCallback) {
 	clearVisitedFlags(graph)
 	depthFirstSearch(graph, startKey, callback)
+}
+
+func (graph *DirectedGraph) BreadthFirstSearch(startKey interface{}, callback GraphSearchCallback) {
+	clearVisitedFlags(graph)
+	queue := queues.NewQueue()
+	queue.Push(startKey)
+	breadthFirstSearch(graph, queue, callback)
 }
