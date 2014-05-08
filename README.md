@@ -1,6 +1,7 @@
 # cargo
 
 [![Build Status](https://drone.io/github.com/modocache/cargo/status.png)](https://drone.io/github.com/modocache/cargo/latest)
+[![GoDoc](https://godoc.org/github.com/modocache/cargo?status.png)](https://godoc.org/github.com/modocache/cargo)
 
 CLRS data structures and algorithms in Go.
 
