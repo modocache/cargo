@@ -24,16 +24,32 @@ type BinarySearchable interface {
 }
 
 type childConstructor func(parent BinarySearchable, value interface{}) BinarySearchable
+type searchableCallback func(searchable BinarySearchable)
 
 func Root(searchable BinarySearchable) BinarySearchable {
+	return root(searchable, nil)
+}
+
+func Depth(searchable BinarySearchable) int {
+	depth := -1
+	callback := func(searchable BinarySearchable) { depth++ }
+	root(searchable, callback)
+	return depth
+}
+
+func root(searchable BinarySearchable, callback searchableCallback) BinarySearchable {
 	if searchable == nil {
 		panic("attempt to pass trees.Root() a nil object")
+	}
+
+	if callback != nil {
+		callback(searchable)
 	}
 
 	if isOrhpan(searchable) {
 		return searchable
 	} else {
-		return Root(searchable.Parent())
+		return root(searchable.Parent(), callback)
 	}
 }
 

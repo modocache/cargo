@@ -9,8 +9,9 @@ import (
 )
 
 var _ = Describe("BinarySearchable", func() {
+	var searchable BinarySearchable
+
 	Describe("Root()", func() {
-		var searchable BinarySearchable
 		Context("when the searchable argument is nil", func() {
 			BeforeEach(func() { searchable = nil })
 			It("panics", func() {
@@ -37,6 +38,30 @@ var _ = Describe("BinarySearchable", func() {
 			})
 			It("returns the orphan, since it's the root", func() {
 				Expect(Root(searchable)).To(Equal(root))
+			})
+		})
+	})
+
+	Describe("Depth()", func() {
+		Context("when the searchable is an orphan", func() {
+			BeforeEach(func() {
+				searchable = NewBinarySearchTree("Dick Grayson", comparators.StringLess)
+			})
+			It("returns 0", func() {
+				Expect(Depth(searchable)).To(Equal(0))
+			})
+		})
+
+		Context("when the searchable is not an orphan", func() {
+			BeforeEach(func() {
+				root := NewBinarySearchTree("Bob", comparators.StringLess)
+				root.Insert("Tina")
+				root.Insert("Gene")
+				root.Insert("Louise")
+				searchable = root.Find("Louise")
+			})
+			It("returns the number of nodes to the root", func() {
+				Expect(Depth(searchable)).To(Equal(3))
 			})
 		})
 	})
