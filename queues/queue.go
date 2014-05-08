@@ -18,10 +18,6 @@ func (queue *Queue) Push(element interface{}) {
 
 func (queue *Queue) Pop() interface{} {
 	element := queue.elements[0]
-	if len(queue.elements) > 1 {
-		queue.elements = queue.elements[1:]
-	} else {
-		queue.elements = make([]interface{}, 0)
-	}
+	queue.elements = queue.elements[1:]
 	return element
 }
