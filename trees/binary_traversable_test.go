@@ -228,4 +228,29 @@ var _ = Describe("BinaryTraversable", func() {
 			})
 		})
 	})
+
+	Describe("IsBinarySearchTree()", func() {
+		var comparator comparators.Less
+		BeforeEach(func() {
+			comparator = comparators.IntLess
+			traversable = NewBinarySearchTree(100, comparator)
+			traversable.(*BinarySearchTree).InsertAll(50, 150, 25, 75, 125, 175)
+		})
+
+		Context("when left < current < right", func() {
+			It("returns true", func() {
+				Expect(IsBinarySearchTree(traversable, comparator)).To(BeTrue())
+			})
+		})
+
+		Context("when the left < current < right condition is not maintained", func() {
+			BeforeEach(func() {
+				child := traversable.(*BinarySearchTree).Find(75)
+				child.SetLeft(NewBinarySearchTree(100, comparator))
+			})
+			It("returns false", func() {
+				Expect(IsBinarySearchTree(traversable, comparator)).To(BeFalse())
+			})
+		})
+	})
 })

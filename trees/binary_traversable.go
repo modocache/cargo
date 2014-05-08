@@ -7,6 +7,7 @@ package trees
 
 import (
 	"github.com/modocache/cargo"
+	"github.com/modocache/cargo/comparators"
 	"github.com/modocache/cargo/queues"
 	"math"
 )
@@ -148,6 +149,29 @@ func depthFirstSearchPostOrder(traversable BinaryTraversable, callback Traversal
 	}
 }
 
+func IsBinarySearchTree(traversable BinaryTraversable, less comparators.Less) bool {
+	leftIs, rightIs := true, true
+	left, right := traversable.Left(), traversable.Right()
+
+	if left != nil {
+		if hasLeftGrandChildren(traversable) {
+			leftIs = IsBinarySearchTree(left, less)
+		} else {
+			leftIs = less(left.Value(), traversable.Value())
+		}
+	}
+
+	if right != nil {
+		if hasRightGrandChildren(traversable) {
+			rightIs = IsBinarySearchTree(right, less)
+		} else {
+			rightIs = !less(right.Value(), traversable.Value())
+		}
+	}
+
+	return rightIs && leftIs
+}
+
 func rotateLeft(x BinaryTraversable) {
 	y := x.Right()
 
@@ -200,6 +224,26 @@ func isOrhpan(searchable BinaryTraversable) bool {
 
 func isLeaf(searchable BinaryTraversable) bool {
 	return searchable.Left() == nil && searchable.Right() == nil
+}
+
+func hasGrandChildren(traversable BinaryTraversable) bool {
+	return hasLeftGrandChildren(traversable) || hasRightGrandChildren(traversable)
+}
+
+func hasLeftGrandChildren(traversable BinaryTraversable) bool {
+	if left := traversable.Left(); left == nil {
+		return false
+	} else {
+		return !isLeaf(left)
+	}
+}
+
+func hasRightGrandChildren(traversable BinaryTraversable) bool {
+	if right := traversable.Right(); right == nil {
+		return false
+	} else {
+		return !isLeaf(right)
+	}
 }
 
 func isRightChild(searchable BinaryTraversable) bool {
