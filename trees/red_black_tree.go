@@ -27,13 +27,21 @@ func NewRedBlackTree(value interface{}, less comparators.Less) *RedBlackTree {
 }
 
 func (tree *RedBlackTree) Insert(value interface{}) BinarySearchable {
-	constructor := func(parent BinarySearchable, value interface{}) BinarySearchable {
-		return &RedBlackTree{&BinarySearchTree{value: value, less: tree.less, parent: parent}, Red}
-	}
-
-	inserted := insert(tree, value, constructor).(*RedBlackTree)
+	inserted := insert(tree, value, tree.constructor()).(*RedBlackTree)
 	inserted.balance()
 	return inserted
+}
+
+func (tree *RedBlackTree) InsertAll(values ...interface{}) {
+	for _, value := range values {
+		tree.Insert(value)
+	}
+}
+
+func (tree *RedBlackTree) constructor() childConstructor {
+	return func(parent BinarySearchable, value interface{}) BinarySearchable {
+		return &RedBlackTree{&BinarySearchTree{value: value, less: tree.less, parent: parent}, Red}
+	}
 }
 
 func (tree *RedBlackTree) balance() {

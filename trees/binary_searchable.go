@@ -39,7 +39,7 @@ func Depth(searchable BinarySearchable) int {
 }
 
 func Height(searchable BinarySearchable) int {
-	if isLeaf(searchable) {
+	if searchable == nil || isLeaf(searchable) {
 		return 0
 	} else {
 		leftHeight, rightHeight := 0, 0
@@ -55,7 +55,13 @@ func Height(searchable BinarySearchable) int {
 }
 
 func IsBalanced(searchable BinarySearchable) bool {
-	return true // TODO
+	if searchable == nil || isLeaf(searchable) {
+		return true
+	} else {
+		leftHeight := Height(searchable.Left())
+		rightHeight := Height(searchable.Right())
+		return int(math.Abs(float64(leftHeight-rightHeight))) < 2
+	}
 }
 
 func root(searchable BinarySearchable, callback searchableCallback) BinarySearchable {

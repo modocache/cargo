@@ -66,7 +66,9 @@ var _ = Describe("BinarySearchable", func() {
 	Describe("Height()", func() {
 		Context("when the searchable is nil", func() {
 			BeforeEach(func() { searchable = nil })
-			XIt("panics")
+			It("returns 0", func() {
+				Expect(Height(searchable)).To(Equal(0))
+			})
 		})
 
 		Context("when the searchable is a leaf", func() {
@@ -93,6 +95,35 @@ var _ = Describe("BinarySearchable", func() {
 		Context("when searchable is nil", func() {
 			BeforeEach(func() { searchable = nil })
 			It("returns true (it is balanced in its nothingness)", func() {
+				Expect(IsBalanced(searchable)).To(BeTrue())
+			})
+		})
+
+		Context("when searchable is a leaf", func() {
+			BeforeEach(func() {
+				searchable = NewBinarySearchTree("House of Leaves", comparators.StringLess)
+			})
+			It("returns true (its two subtrees have equal heights of 0)", func() {
+				Expect(IsBalanced(searchable)).To(BeTrue())
+			})
+		})
+
+		Context("when searchable has two subtrees whose height differ by more than 1", func() {
+			BeforeEach(func() {
+				searchable = NewBinarySearchTree(0, comparators.IntLess)
+				searchable.(*BinarySearchTree).InsertAll(-10, -5, -20, 10, 20, 30, 40)
+			})
+			It("returns false", func() {
+				Expect(IsBalanced(searchable)).To(BeFalse())
+			})
+		})
+
+		Context("when searchable has two subtrees whose heights are within 1 of one another", func() {
+			BeforeEach(func() {
+				searchable = NewBinarySearchTree(0, comparators.IntLess)
+				searchable.(*BinarySearchTree).InsertAll(-10, -20, -30, 10, 20, 30, 40)
+			})
+			It("returns true", func() {
 				Expect(IsBalanced(searchable)).To(BeTrue())
 			})
 		})
